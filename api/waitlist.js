@@ -57,6 +57,12 @@ export default async function handler(req, res) {
         .select()
         .single();
 
+      if (error.code === '42P01') {
+        return res.status(500).json({
+          error: 'Database table not configured. Contact support.',
+        });
+      }
+
       if (error) {
         console.error('Supabase error:', error);
         return res
