@@ -50,25 +50,44 @@ export default async function handler(req, res) {
       }
 
       // Insert new email
+      // Note: Don't set created_at manually - let Supabase handle it with DEFAULT NOW()
       const { data, error } = await supabase
         .from('waitlist')
         .insert([
           {
             email: email.toLowerCase(),
-            created_at: new Date().toISOString(),
+            // Remove created_at - let database default handle it
           },
         ])
         .select()
         .single();
 
-      // ✅ FIX 2: Check if error exists BEFORE accessing error.code
+      // Enhanced error handling
       if (error) {
-        console.error('Supabase insert error:', error);
+        console.error('Supabase insert error:', JSON.stringify(error, null, 2));
+        console.error('Error code:', error.code);
+        console.error('Error message:', error.message);
+        console.error('Error details:', error.details);
+        console.error('Error hint:', error.hint);
 
-        // Check for specific error codes
-        if (error.code === '42P01') {
+        // Check for RLS (Row Level Security) policy violation
+        if (error.message && error.message.includes('policy')) {
           return res.status(500).json({
-            error: 'Database table not configured. Contact support.',
+            error:
+              'Database security policy error. Please check RLS policies in Supabase.',
+            details:
+              'The waitlist table may have Row Level Security enabled. You need to create an INSERT policy.',
+          });
+        }
+
+        // Check for table doesn't exist
+        if (
+          error.code === '42P01' ||
+          error.message?.includes('does not exist')
+        ) {
+          return res.status(500).json({
+            error:
+              'Database table not found. Please create the waitlist table in Supabase.',
           });
         }
 
@@ -79,9 +98,10 @@ export default async function handler(req, res) {
           });
         }
 
-        // Generic error
+        // Generic error with more details
         return res.status(500).json({
           error: 'Failed to add email to waitlist',
+          details: error.message || 'Unknown error occurred',
         });
       }
 
