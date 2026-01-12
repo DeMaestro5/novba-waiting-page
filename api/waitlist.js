@@ -1,10 +1,6 @@
 // Vercel serverless function for waitlist API
 import { createClient } from '@supabase/supabase-js';
 
-// Note: Vercel automatically loads .env files when using `vercel dev`
-// For production, environment variables are set in Vercel dashboard
-// No dotenv needed - Vercel handles it automatically!
-
 export default async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -32,13 +28,21 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Invalid email address' });
       }
 
-      // Check if email already exists
-      const { data: existing } = await supabase
+      // ✅ FIX 1: Use .maybeSingle() instead of .single()
+      // This returns null if no match, instead of throwing error
+      const { data: existing, error: checkError } = await supabase
         .from('waitlist')
         .select('email')
         .eq('email', email.toLowerCase())
-        .single();
+        .maybeSingle();
 
+      // Handle check errors (like table doesn't exist)
+      if (checkError) {
+        console.error('Error checking existing email:', checkError);
+        // Continue anyway - maybe table was just created
+      }
+
+      // If email already exists, return error
       if (existing) {
         return res
           .status(400)
@@ -57,17 +61,28 @@ export default async function handler(req, res) {
         .select()
         .single();
 
-      if (error.code === '42P01') {
-        return res.status(500).json({
-          error: 'Database table not configured. Contact support.',
-        });
-      }
-
+      // ✅ FIX 2: Check if error exists BEFORE accessing error.code
       if (error) {
-        console.error('Supabase error:', error);
-        return res
-          .status(500)
-          .json({ error: 'Failed to add email to waitlist' });
+        console.error('Supabase insert error:', error);
+
+        // Check for specific error codes
+        if (error.code === '42P01') {
+          return res.status(500).json({
+            error: 'Database table not configured. Contact support.',
+          });
+        }
+
+        // Check for duplicate email (PostgreSQL unique violation)
+        if (error.code === '23505') {
+          return res.status(400).json({
+            error: 'This email is already on the waitlist!',
+          });
+        }
+
+        // Generic error
+        return res.status(500).json({
+          error: 'Failed to add email to waitlist',
+        });
       }
 
       return res.status(200).json({
@@ -89,7 +104,7 @@ export default async function handler(req, res) {
         .select('*', { count: 'exact', head: true });
 
       if (error) {
-        console.error('Supabase error:', error);
+        console.error('Supabase count error:', error);
         return res.status(500).json({ error: 'Failed to get waitlist count' });
       }
 
