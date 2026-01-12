@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Novba - Stop Undercharging. Start Scaling.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --primary: #0a1628;
+        --accent: #ff6b35;
+        --secondary: #004e89;
+        --light: #f7f9fb;
+        --text-dark: #1a1a1a;
+        --text-light: #64748b;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'DM Sans', sans-serif;
+        background: var(--light);
+        color: var(--text-dark);
+        overflow-x: hidden;
+      }
+
+      h1,
+      h2,
+      h3 {
+        font-family: 'Syne', sans-serif;
+        font-weight: 800;
+      }
+
+      /* Background gradient mesh */
+      .hero-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(
+            circle at 20% 30%,
+            rgba(255, 107, 53, 0.08) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 70%,
+            rgba(0, 78, 137, 0.08) 0%,
+            transparent 50%
+          );
+        z-index: 0;
+      }
+
+      /* Animated gradient orb */
+      .orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.3;
+        animation: float 8s ease-in-out infinite;
+      }
+
+      .orb-1 {
+        width: 400px;
+        height: 400px;
+        background: linear-gradient(135deg, #ff6b35, #ff8f6b);
+        top: -100px;
+        right: -100px;
+        animation-delay: 0s;
+      }
+
+      .orb-2 {
+        width: 300px;
+        height: 300px;
+        background: linear-gradient(135deg, #004e89, #0076be);
+        bottom: 100px;
+        left: -50px;
+        animation-delay: 2s;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translate(0, 0) scale(1);
+        }
+        50% {
+          transform: translate(30px, -30px) scale(1.1);
+        }
+      }
+
+      /* Fade in animations */
+      .fade-in {
+        opacity: 0;
+        animation: fadeIn 0.8s ease-out forwards;
+      }
+
+      @keyframes fadeIn {
+        to {
+          opacity: 1;
+        }
+      }
+
+      .slide-up {
+        opacity: 0;
+        transform: translateY(30px);
+        animation: slideUp 0.8s ease-out forwards;
+      }
+
+      @keyframes slideUp {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Stagger animation delays */
+      .delay-100 {
+        animation-delay: 0.1s;
+      }
+      .delay-200 {
+        animation-delay: 0.2s;
+      }
+      .delay-300 {
+        animation-delay: 0.3s;
+      }
+      .delay-400 {
+        animation-delay: 0.4s;
+      }
+      .delay-500 {
+        animation-delay: 0.5s;
+      }
+      .delay-600 {
+        animation-delay: 0.6s;
+      }
+
+      /* Custom button styles */
+      .btn-primary {
+        background: linear-gradient(135deg, var(--accent), #ff8f6b);
+        color: white;
+        font-weight: 700;
+        padding: 1rem 2.5rem;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+        font-size: 1.125rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(255, 107, 53, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-primary:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        transition: left 0.5s;
+      }
+
+      .btn-primary:hover:before {
+        left: 100%;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 30px rgba(255, 107, 53, 0.4);
+      }
+
+      /* Input field */
+      input[type='email'] {
+        padding: 1rem 1.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        width: 100%;
+        transition: all 0.3s ease;
+        font-family: 'DM Sans', sans-serif;
+      }
+
+      input[type='email']:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+      }
+
+      /* Feature cards */
+      .feature-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 20px;
+        border: 1px solid #e2e8f0;
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .feature-card:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 0;
+        background: linear-gradient(180deg, var(--accent), var(--secondary));
+        transition: height 0.4s ease;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        border-color: var(--accent);
+      }
+
+      .feature-card:hover:before {
+        height: 100%;
+      }
+
+      /* Icon styles */
+      .feature-icon {
+        width: 56px;
+        height: 56px;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 107, 53, 0.1),
+          rgba(255, 143, 107, 0.1)
+        );
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .feature-card:hover .feature-icon {
+        transform: scale(1.1) rotate(5deg);
+        background: linear-gradient(
+          135deg,
+          rgba(255, 107, 53, 0.2),
+          rgba(255, 143, 107, 0.2)
+        );
+      }
+
+      /* Social proof badge */
+      .social-proof {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 100px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      }
+
+      .avatar-stack {
+        display: flex;
+        margin-left: -8px;
+      }
+
+      .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 2px solid white;
+        background: linear-gradient(135deg, #ff6b35, #004e89);
+        margin-left: -8px;
+      }
+
+      .avatar:first-child {
+        margin-left: 0;
+      }
+
+      /* Pill badge */
+      .badge {
+        display: inline-block;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 107, 53, 0.1),
+          rgba(255, 143, 107, 0.1)
+        );
+        color: var(--accent);
+        padding: 0.5rem 1rem;
+        border-radius: 100px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        border: 1px solid rgba(255, 107, 53, 0.2);
+      }
+
+      /* Trust indicators */
+      .trust-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.5rem;
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+      }
+
+      .check-icon {
+        width: 24px;
+        height: 24px;
+        background: linear-gradient(135deg, var(--accent), #ff8f6b);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 14px;
+        flex-shrink: 0;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2.5rem;
+        }
+
+        .orb {
+          width: 250px !important;
+          height: 250px !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Hero Section -->
+    <section
+      class="relative min-h-screen flex items-center justify-center px-6 py-20 overflow-hidden"
+    >
+      <div class="hero-bg"></div>
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+
+      <div class="relative z-10 max-w-6xl w-full">
+        <!-- Badge -->
+        <div class="text-center mb-8 fade-in">
+          <span class="badge">🚀 Launching February 2026</span>
+        </div>
+
+        <!-- Main headline -->
+        <h1
+          class="text-6xl md:text-7xl lg:text-8xl font-extrabold text-center mb-6 slide-up delay-100"
+          style="line-height: 1.1"
+        >
+          Stop<br />
+          <span
+            style="
+              background: linear-gradient(135deg, #ff6b35, #ff8f6b);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              background-clip: text;
+            "
+            >Undercharging.</span
+          ><br />
+          Start Scaling.
+        </h1>
+
+        <!-- Subheadline -->
+        <p
+          class="text-xl md:text-2xl text-center max-w-3xl mx-auto mb-4 slide-up delay-200"
+          style="color: var(--text-light)"
+        >
+          AI-powered invoicing that shows you
+          <strong style="color: var(--text-dark)">exactly</strong> how much you
+          should be charging.
+        </p>
+
+        <!-- Social proof -->
+        <div class="flex justify-center mb-12 slide-up delay-300">
+          <div class="social-proof">
+            <!-- <div class="avatar-stack">
+              <div class="avatar"></div>
+              <div class="avatar"></div>
+              <div class="avatar"></div>
+            </div> -->
+            <span style="font-weight: 600; color: var(--text-dark)"
+              >Join freelancers</span
+            >
+            <span style="color: var(--text-light)"
+              >waiting for early access</span
+            >
+          </div>
+        </div>
+
+        <!-- Email signup form -->
+        <form id="signup-form" class="max-w-xl mx-auto slide-up delay-400">
+          <div class="flex flex-col sm:flex-row gap-4">
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+              class="flex-1"
+              required
+            />
+            <button type="submit" class="btn-primary whitespace-nowrap">
+              Join Waitlist
+            </button>
+          </div>
+          <p class="text-sm text-center mt-4" style="color: var(--text-light)">
+            ✨ Free lifetime access for the first 100 users
+          </p>
+        </form>
+
+        <!-- Trust indicators -->
+        <div
+          class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto mt-16 slide-up delay-500"
+        >
+          <div class="trust-item">
+            <div class="check-icon">✓</div>
+            <span style="font-weight: 500; font-size: 0.875rem"
+              >No credit card required</span
+            >
+          </div>
+          <div class="trust-item">
+            <div class="check-icon">✓</div>
+            <span style="font-weight: 500; font-size: 0.875rem"
+              >Transparent pricing forever</span
+            >
+          </div>
+          <div class="trust-item">
+            <div class="check-icon">✓</div>
+            <span style="font-weight: 500; font-size: 0.875rem"
+              >Cancel anytime (actually)</span
+            >
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-24 px-6 relative z-10" style="background: white">
+      <div class="max-w-6xl mx-auto">
+        <!-- Section header -->
+        <div class="text-center mb-16">
+          <h2 class="text-4xl md:text-5xl font-extrabold mb-4">
+            Built for freelancers.<br />
+            <span style="color: var(--text-light)">Not accountants.</span>
+          </h2>
+          <p
+            class="text-xl"
+            style="color: var(--text-light); max-width: 600px; margin: 0 auto"
+          >
+            Every feature designed to help you earn more, get paid faster, and
+            stop leaving money on the table.
+          </p>
+        </div>
+
+        <!-- Feature cards grid -->
+        <div class="grid md:grid-cols-3 gap-8">
+          <!-- Feature 1 -->
+          <div class="feature-card">
+            <div class="feature-icon">🧠</div>
+            <h3 class="text-xl font-bold mb-3">AI Pricing Coach</h3>
+            <p style="color: var(--text-light); line-height: 1.6">
+              See if you're undercharging based on 10,000+ real invoices. Get
+              instant pricing insights tailored to your skills and experience.
+            </p>
+          </div>
+
+          <!-- Feature 2 -->
+          <div class="feature-card">
+            <div class="feature-icon">✨</div>
+            <h3 class="text-xl font-bold mb-3">Beautiful Invoices</h3>
+            <p style="color: var(--text-light); line-height: 1.6">
+              Professional templates that actually look modern. Your clients
+              will remember you for the right reasons.
+            </p>
+          </div>
+
+          <!-- Feature 3 -->
+          <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3 class="text-xl font-bold mb-3">Get Paid Faster</h3>
+            <p style="color: var(--text-light); line-height: 1.6">
+              Automated reminders, Stripe integration, and delivery tracking so
+              you know exactly when clients open your invoices.
+            </p>
+          </div>
+
+          <!-- Feature 4 -->
+          <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3 class="text-xl font-bold mb-3">Transparent Pricing</h3>
+            <p style="color: var(--text-light); line-height: 1.6">
+              What you pay is locked in. Forever. No midway surprises, no "terms
+              changed" BS. We actually mean it.
+            </p>
+          </div>
+
+          <!-- Feature 5 -->
+          <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3 class="text-xl font-bold mb-3">Real-time Insights</h3>
+            <p style="color: var(--text-light); line-height: 1.6">
+              See your cash flow, outstanding invoices, and revenue trends at a
+              glance. Know exactly where your business stands.
+            </p>
+          </div>
+
+          <!-- Feature 6 -->
+          <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3 class="text-xl font-bold mb-3">Proposal to Payment</h3>
+            <p style="color: var(--text-light); line-height: 1.6">
+              Seamless workflow from proposal to contract to invoice. Everything
+              connected, nothing falls through the cracks.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-24 px-6 relative overflow-hidden">
+      <div class="hero-bg"></div>
+      <div
+        class="orb orb-1"
+        style="top: auto; bottom: -100px; right: auto; left: -100px"
+      ></div>
+
+      <div class="max-w-4xl mx-auto text-center relative z-10">
+        <h2 class="text-4xl md:text-5xl font-extrabold mb-6">
+          Ready to stop undercharging?
+        </h2>
+        <p class="text-xl mb-12" style="color: var(--text-light)">
+          Join freelancers already waiting for early access. First 100 get
+          lifetime access for free.
+        </p>
+
+        <form id="signup-form-bottom" class="max-w-xl mx-auto">
+          <div class="flex flex-col sm:flex-row gap-4">
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+              class="flex-1"
+              required
+            />
+            <button type="submit" class="btn-primary whitespace-nowrap">
+              Join Waitlist
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer
+      class="py-12 px-6 text-center"
+      style="background: var(--primary); color: white"
+    >
+      <div class="max-w-6xl mx-auto">
+        <div class="mb-6">
+          <h3 class="text-2xl font-bold mb-2">Novba</h3>
+          <p style="color: rgba(255, 255, 255, 0.6)">
+            Invoice software for freelancers who want to earn more.
+          </p>
+        </div>
+
+        <div style="color: rgba(255, 255, 255, 0.4); font-size: 0.875rem">
+          © 2026 Novba. Built with ❤️ for freelancers.
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Form submission handler
+      function handleSubmit(e) {
+        e.preventDefault();
+        const email = e.target.querySelector('input[type="email"]').value;
+
+        // Here you'll integrate with your email service (Mailchimp, ConvertKit, etc.)
+        // For now, just show a success message
+        alert(
+          `Thanks! ${email} has been added to the waitlist. 🎉\n\nWe'll email you when Novba launches in February.`
+        );
+
+        e.target.reset();
+      }
+
+      document
+        .getElementById('signup-form')
+        .addEventListener('submit', handleSubmit);
+      document
+        .getElementById('signup-form-bottom')
+        .addEventListener('submit', handleSubmit);
+
+      // Smooth scroll for better UX
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
